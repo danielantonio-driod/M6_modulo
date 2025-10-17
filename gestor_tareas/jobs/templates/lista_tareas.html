@@ -1,0 +1,117 @@
+<!-- lista_tareas.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tareas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Lista de Tareas</h1>
+            <button class="btn btn-primary" onclick="abrirModal('modalCrearTarea')">Crear Nueva Tarea</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Título</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for tarea in tareas %}
+                    <tr>
+                        <td>{{ tarea.titulo }}</td>
+                        <td>
+                            {% if tarea.completada %}
+                                <span class="badge bg-success">Completada</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm me-1" onclick="abrirModalDetalle({{ tarea.id }}, '{{ tarea.titulo|escapejs }}', '{{ tarea.descripcion|escapejs }}', {{ tarea.completada|yesno:'true,false' }}, '{{ tarea.fecha_creacion }}')">Ver</button>
+                            <button class="btn btn-secondary btn-sm me-1" onclick="abrirModalActualizar({{ tarea.id }}, '{{ tarea.titulo|escapejs }}', '{{ tarea.descripcion|escapejs }}', {{ tarea.completada|yesno:'true,false' }})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="abrirModalEliminar({{ tarea.id }})">Eliminar</button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="text-center">No hay tareas disponibles.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'modal_crear_tarea.html' %}
+    {% include 'modal_detalle_tarea.html' %}
+    {% include 'modal_actualizar_tarea.html' %}
+    {% include 'modal_eliminar_tarea.html' %}
+
+    <style>
+        /* Ocultar modales por defecto, Bootstrap los mostrará con show */
+        .modal { display: none; }
+        .modal.show { display: block; background: rgba(0,0,0,0.4); }
+        .modal-content { border-radius: 0.5rem; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    </style>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function abrirModal(id) {
+            var modal = document.getElementById(id);
+            modal.classList.add('show');
+            modal.style.display = 'block';
+        }
+        function cerrarModal() {
+            var modals = document.getElementsByClassName('modal');
+            for (var i = 0; i < modals.length; i++) {
+                modals[i].classList.remove('show');
+                modals[i].style.display = 'none';
+            }
+        }
+        function abrirModalDetalle(id, titulo, descripcion, completada, fecha_creacion) {
+            var modal = document.getElementById('modalDetalleTarea');
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            document.querySelector('#modalDetalleTarea [data-detalle-titulo]').textContent = titulo;
+            document.querySelector('#modalDetalleTarea [data-detalle-descripcion]').textContent = descripcion;
+            document.querySelector('#modalDetalleTarea [data-detalle-estado]').textContent = completada ? 'Completada' : 'Pendiente';
+            document.querySelector('#modalDetalleTarea [data-detalle-fecha]').textContent = fecha_creacion;
+        }
+        function abrirModalActualizar(id, titulo, descripcion, completada) {
+            var modal = document.getElementById('modalActualizarTarea');
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            var form = document.querySelector('#modalActualizarTarea form');
+            form.action = '/'+id+'/actualizar/';
+            form.querySelector('[name="titulo"]').value = titulo;
+            form.querySelector('[name="descripcion"]').value = descripcion;
+            form.querySelector('[name="completada"]').checked = completada;
+        }
+        function abrirModalEliminar(id) {
+            var modal = document.getElementById('modalEliminarTarea');
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            var form = document.querySelector('#modalEliminarTarea form');
+            form.action = '/' + id + '/eliminar/';
+        }
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            var modals = document.getElementsByClassName('modal');
+            for (var i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].classList.remove('show');
+                    modals[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
