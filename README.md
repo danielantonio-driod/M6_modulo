@@ -28,6 +28,7 @@ Este proyecto es una aplicación web para la gestión de tareas, desarrollada co
    python manage.py runserver
    ```
 6. Accede a la app en [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+   admin temporal darri - 1234 
 
 ## Uso
 - Desde la página principal puedes:
@@ -41,4 +42,4 @@ Este proyecto es una aplicación web para la gestión de tareas, desarrollada co
 - `tareas/` - Configuración global del proyecto
 
 ## Créditos
-Desarrollado por [Tu Nombre].
+Desarrollado por d-labs.
